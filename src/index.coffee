@@ -3,7 +3,7 @@
 module.exports = exports = ->
 	tree = (name, extra) ->
 		tree.extras[name] = extra
-		new exports.Node tree, name, extra
+		new exports.Node tree, name
 
 	tree.events = new EventEmitter
 	tree.dependantTree = {}
@@ -20,7 +20,7 @@ module.exports = exports = ->
 	tree
 
 class exports.Node
-	constructor: (@tree, @name, @extra) ->
+	constructor: (@tree, @name) ->
 
 	dependsOn: (names...) ->
 		(@tree.dependantTree[name] ?= []).push @name for name in names
