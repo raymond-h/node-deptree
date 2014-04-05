@@ -1,0 +1,15 @@
+{
+  "name": "deptree",
+  "version": "0.1.0",
+  "description": "Build dependency graphs!",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "keywords": [
+    "dependency",
+    "dependencies"
+  ],
+  "author": "Raymond Hammarling",
+  "license": "MIT"
+}
