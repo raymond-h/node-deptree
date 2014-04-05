@@ -1,5 +1,6 @@
 {EventEmitter} = require 'events'
 
+_ = require 'underscore'
 Q = require 'q'
 
 module.exports = exports = ->
@@ -36,6 +37,12 @@ module.exports = exports = ->
 		queue
 
 	tree.buildUpdateTree = (name, treeMap = {}) ->
+		deps = tree.dependencies name
+		treeMap[name] = deps
+		for d in (tree.dependantTree[name] ?= [])
+			tree.buildUpdateTree d, treeMap
+
+		treeMap
 
 	tree
 
