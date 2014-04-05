@@ -61,6 +61,65 @@ describe 'Dependency tree', ->
 
 			tree.update 'B'
 
+	describe '#dependencies()', ->
+		it 'should return the dependencies of the given node', ->
+			tree 'A'
+			.dependsOn 'B', 'C'
+
+			tree 'B'
+			.dependsOn 'G', 'Q'
+
+			tree 'C'
+			.dependsOn 'F'
+
+			tree.dependencies('A').should.deep.equal ['B', 'C']
+			tree.dependencies('B').should.deep.equal ['G', 'Q']
+			tree.dependencies('C').should.deep.equal ['F']
+			tree.dependencies('Q').should.deep.equal []
+
+	describe '#buildUpdateQueue()', ->
+		it 'should return an array of nodes in the order to update them in', ->
+			tree 'A'
+			.dependsOn 'B', 'C'
+
+			tree 'B'
+			.dependsOn 'G', 'Q'
+
+			tree 'C'
+			.dependsOn 'F'
+
+			tree 'Q'
+			.dependsOn 'C'
+
+			tree.buildUpdateQueue 'F'
+			.should.deep.equal ['F', 'C', 'A', 'Q', 'B']
+
+			tree.buildUpdateQueue 'G'
+			.should.deep.equal ['G', 'B', 'A']
+
+			tree.buildUpdateQueue 'B'
+			.should.deep.equal ['B', 'A']
+
+	describe '#buildUpdateTree()', ->
+		it 'should return a map of affected nodes mapped to their dependencies', ->
+			tree 'A'
+			.dependsOn 'B', 'C'
+
+			tree 'B'
+			.dependsOn 'G', 'Q'
+
+			tree 'C'
+			.dependsOn 'F'
+
+			tree 'Q'
+			.dependsOn 'C'
+
+			tree.buildUpdateTree 'G'
+			.should.deep.equal
+				'G': []
+				'B': ['G', 'Q']
+				'A': ['B', 'C']
+
 describe 'Node', ->
 	describe '#dependsOn()', ->
 		it 'should add one or more dependencies', ->
