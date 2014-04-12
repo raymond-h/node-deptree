@@ -23,6 +23,9 @@ module.exports = exports = ->
 	tree.dependencies = (name) ->
 		key for key, value of tree.dependantTree when name in value
 
+	tree.dependents = (name) ->
+		tree.dependantTree[name] ? []
+
 	tree.buildUpdateQueue = (name) ->
 		queue = [name]
 

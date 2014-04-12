@@ -77,6 +77,22 @@ describe 'Dependency tree', ->
 			tree.dependencies('C').should.deep.equal ['F']
 			tree.dependencies('Q').should.deep.equal []
 
+	describe '#dependents()', ->
+		it 'should return the nodes depending on the given node', ->
+			tree 'A'
+			.dependsOn 'B', 'C'
+
+			tree 'B'
+			.dependsOn 'G', 'Q'
+
+			tree 'C'
+			.dependsOn 'F'
+
+			tree.dependents('A').should.deep.equal []
+			tree.dependents('B').should.deep.equal ['A']
+			tree.dependents('C').should.deep.equal ['A']
+			tree.dependents('Q').should.deep.equal ['B']
+
 	describe '#buildUpdateQueue()', ->
 		it 'should return an array of nodes in the order to update them in', ->
 			tree 'A'
