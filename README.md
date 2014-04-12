@@ -7,7 +7,7 @@ This module is not currently available on the npm registry, so you can't install
 Instead, you may clone this repo, or add it as a dependency in `package.json`!
 
 ## Example usage
-```node
+```js
 var deptree = require('deptree');
 
 var tree = deptree();
