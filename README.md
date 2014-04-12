@@ -7,17 +7,19 @@ This module is not currently available on the npm registry, so you can't install
 Instead, you may clone this repo, or add it as a dependency in `package.json`!
 
 ## Example usage
-    var deptree = require('deptree');
+```node
+var deptree = require('deptree');
 
-    var tree = deptree();
-    
-    tree('A')
-        .dependsOn('B', 'C')
-        .on('update', function() {
-        	console.log("Changing A!");
-        });
-    
-    tree.update('C');
+var tree = deptree();
+
+tree('A')
+    .dependsOn('B', 'C')
+    .on('update', function() {
+    	console.log("Changing A!");
+    });
+
+tree.update('C');
+```
     
 ## License
 The MIT License (MIT)
