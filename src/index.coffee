@@ -17,7 +17,7 @@ module.exports = exports = ->
 		tree.events.emit 'update', name, tree.extras[name]
 
 		# .update nodes that depend on ´name´ if any
-		dependents = (tree.dependentTree[name] ?= [])
+		dependents = tree.dependents name
 		tree.update d for d in dependents
 
 	tree.dependencies = (name) ->
@@ -30,7 +30,7 @@ module.exports = exports = ->
 		queue = [name]
 
 		addDeps = (name) ->
-			dependents = (tree.dependentTree[name] ?= [])
+			dependents = tree.dependents name
 			for d in dependents when not (d in queue)
 				queue.push d
 				addDeps d
@@ -42,7 +42,7 @@ module.exports = exports = ->
 	tree.buildUpdateTree = (name, treeMap = {}) ->
 		deps = tree.dependencies name
 		treeMap[name] = deps
-		for d in (tree.dependentTree[name] ?= [])
+		for d in tree.dependents name
 			tree.buildUpdateTree d, treeMap
 
 		treeMap
