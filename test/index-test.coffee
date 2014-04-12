@@ -142,7 +142,7 @@ describe 'Node', ->
 			tree 'A'
 			.dependsOn 'B', 'C'
 
-			tree.dependantTree.should.deep.equal { 'B': ['A'], 'C': ['A'] }
+			tree.dependentTree.should.deep.equal { 'B': ['A'], 'C': ['A'] }
 
 	describe '#on()', ->
 		it 'should add an event handler for the given event', ->

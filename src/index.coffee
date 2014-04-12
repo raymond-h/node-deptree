@@ -9,7 +9,7 @@ module.exports = exports = ->
 		new exports.Node tree, name
 
 	tree.events = new EventEmitter
-	tree.dependantTree = {}
+	tree.dependentTree = {}
 	tree.extras = {}
 
 	tree.update = (name) ->
@@ -17,21 +17,21 @@ module.exports = exports = ->
 		tree.events.emit 'update', name, tree.extras[name]
 
 		# .update nodes that depend on ´name´ if any
-		dependants = (tree.dependantTree[name] ?= [])
-		tree.update d for d in dependants
+		dependents = (tree.dependentTree[name] ?= [])
+		tree.update d for d in dependents
 
 	tree.dependencies = (name) ->
-		key for key, value of tree.dependantTree when name in value
+		key for key, value of tree.dependentTree when name in value
 
 	tree.dependents = (name) ->
-		tree.dependantTree[name] ? []
+		tree.dependentTree[name] ? []
 
 	tree.buildUpdateQueue = (name) ->
 		queue = [name]
 
 		addDeps = (name) ->
-			dependants = (tree.dependantTree[name] ?= [])
-			for d in dependants when not (d in queue)
+			dependents = (tree.dependentTree[name] ?= [])
+			for d in dependents when not (d in queue)
 				queue.push d
 				addDeps d
 
@@ -42,7 +42,7 @@ module.exports = exports = ->
 	tree.buildUpdateTree = (name, treeMap = {}) ->
 		deps = tree.dependencies name
 		treeMap[name] = deps
-		for d in (tree.dependantTree[name] ?= [])
+		for d in (tree.dependentTree[name] ?= [])
 			tree.buildUpdateTree d, treeMap
 
 		treeMap
@@ -53,7 +53,7 @@ class exports.Node
 	constructor: (@tree, @name) ->
 
 	dependsOn: (names...) ->
-		(@tree.dependantTree[name] ?= []).push @name for name in names
+		(@tree.dependentTree[name] ?= []).push @name for name in names
 
 		this
 
