@@ -229,7 +229,7 @@ describe 'Node', ->
 
 			tree.updateListeners.should.have.key 'A'
 
-	describe 'update callback', ->
+	describe 'update callbacks', ->
 		it 'should complete synchronously by default', (done) ->
 			updated = []
 
@@ -254,12 +254,12 @@ describe 'Node', ->
 			.dependsOn 'B'
 			.on 'update', (..., async) ->
 				asyncDone = async()
-				setTimeout (-> updated.push 'A'; asyncDone()), 50
+				process.nextTick -> updated.push 'A'; asyncDone()
 
 			tree 'B'
 			.on 'update', (..., async) ->
 				asyncDone = async()
-				setTimeout (-> updated.push 'B'; asyncDone()), 50
+				process.nextTick -> updated.push 'B'; asyncDone()
 
 			tree.update 'B', asyncCatch(done) () ->
 				updated.should.deep.equal ['B', 'A']
