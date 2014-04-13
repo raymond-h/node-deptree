@@ -68,20 +68,22 @@ exports.linearUpdater = (tree, name, triggerUpdate, done) ->
 	queue = tree.buildUpdateQueue name
 
 	do update = ->
-		item = queue.shift()
-		
-		triggerUpdate item, ->
-			if queue.length > 0 then update()
-			else done()
+		process.nextTick ->
+			item = queue.shift()
+			
+			triggerUpdate item, ->
+				if queue.length > 0 then update()
+				else done()
 
 exports.defaultUpdaters.parallel =
 exports.parallelUpdater = (tree, name, triggerUpdate, done) ->
 	treeMap = tree.buildUpdateTree name
 
 	next = (name, callback) ->
-		triggerUpdate name, ->
-			updateDone name, ->
-				callback()
+		process.nextTick ->
+			triggerUpdate name, ->
+				updateDone name, ->
+					callback()
 		
 	updateDone = (name, callback) ->
 		doNext = []
