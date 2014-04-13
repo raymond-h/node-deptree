@@ -2,6 +2,10 @@
   "name": "deptree",
   "version": "1.0.0",
   "description": "Build dependency graphs!",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raymond-h/node-deptree.git"
+  },
   "main": "lib/index.js",
   "scripts": {
     "test": "grunt test",
