@@ -65,6 +65,9 @@ module.exports = exports = (updater = 'linear') ->
 
 		inverted
 
+	tree.checkDependsOn = (mainName, depName) ->
+		mainName in tree.dependents depName
+
 	tree
 
 exports.defaultUpdaters = {}
@@ -113,6 +116,10 @@ class exports.Node
 	constructor: (@tree, @name) ->
 
 	dependsOn: (names...) ->
+		for name in names
+			if @tree.checkDependsOn name, @name
+				throw new Error "Circular dependency, #{name} already depends on #{@name}"
+
 		(@tree.dependentTree[name] ?= []).push @name for name in names
 
 		this

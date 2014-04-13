@@ -152,6 +152,22 @@ describe 'Dependency tree', ->
 				'B': ['G']
 				'A': ['B']
 
+	describe '#checkDependsOn()', ->
+		it 'should return true if node 1 depends on node 2', ->
+			tree 'A'
+			.dependsOn 'B', 'C'
+
+			tree.checkDependsOn('A', 'B').should.be.true
+
+		it 'should return false if node 1 does not depend on node 2', ->
+			tree 'A'
+			.dependsOn 'B', 'C'
+
+			tree 'D'
+			.dependsOn 'C'
+
+			tree.checkDependsOn('D', 'B').should.be.false
+
 describe 'Updaters', ->
 	describe 'Linear', ->
 		it 'should trigger updates for nodes linearly - a
@@ -222,6 +238,12 @@ describe 'Node', ->
 			.dependsOn 'B', 'C'
 
 			tree.dependentTree.should.deep.equal { 'B': ['A'], 'C': ['A'] }
+
+		it 'should throw an error if a circular dependency is detected', ->
+			tree 'A'
+			.dependsOn 'B'
+
+			(-> tree('B').dependsOn 'A').should.throw Error, /Circular dependency/
 
 	describe '#onUpdate()', ->
 		it 'should add an update listener', ->
