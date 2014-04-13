@@ -1,10 +1,10 @@
 {
-  "name": "deptree",
+  "name": "deptree-updater",
   "version": "1.0.0",
-  "description": "Build dependency graphs!",
+  "description": "Build trees of dependencies and trigger updates in the right order!",
   "repository": {
     "type": "git",
-    "url": "https://github.com/raymond-h/node-deptree.git"
+    "url": "https://github.com/raymond-h/node-deptree-updater.git"
   },
   "main": "lib/index.js",
   "scripts": {
