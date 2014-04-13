@@ -117,5 +117,5 @@ class exports.Node
 
 		this
 
-	on: (event, callback) ->
-		@tree.updateListeners[@name] = callback if event is 'update'
+	onUpdate: (callback) ->
+		@tree.updateListeners[@name] = callback

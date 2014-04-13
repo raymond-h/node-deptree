@@ -44,7 +44,7 @@ describe 'Dependency tree', ->
 
 			tree.extras.should.deep.equal { 'A': { 'candy': 'yes!' } }
 
-			node.on 'update', asyncCatch(done) (name, extra) ->
+			node.onUpdate asyncCatch(done) (name, extra) ->
 				extra.should.deep.equal { 'candy': 'yes!' }
 
 				done()
@@ -54,7 +54,7 @@ describe 'Dependency tree', ->
 	describe '#update()', ->
 		it "should trigger update event for an updated node", (done) ->
 			tree 'A'
-			.on 'update', (name) ->
+			.onUpdate (name) ->
 				name.should.equal 'A'
 
 				done()
@@ -65,12 +65,12 @@ describe 'Dependency tree', ->
 			updatedB = false
 
 			tree 'B'
-			.on 'update', (name) ->
+			.onUpdate (name) ->
 				updatedB = true
 
 			tree 'A'
 			.dependsOn 'B'
-			.on 'update', asyncCatch(done) (name) ->
+			.onUpdate asyncCatch(done) (name) ->
 				updatedB.should.equal true, 'expected B to be updated before A'
 
 				done()
@@ -163,14 +163,14 @@ describe 'Updaters', ->
 
 			tree 'A'
 			.dependsOn 'B'
-			.on 'update', -> updated.push 'A'
+			.onUpdate -> updated.push 'A'
 
 			tree 'B'
 			.dependsOn 'G'
-			.on 'update', -> updated.push 'B'
+			.onUpdate -> updated.push 'B'
 
 			tree 'G'
-			.on 'update', -> updated.push 'G'
+			.onUpdate -> updated.push 'G'
 
 			tree.update 'G', asyncCatch(done) () ->
 
@@ -190,18 +190,18 @@ describe 'Updaters', ->
 
 			tree 'A'
 			.dependsOn 'B', 'C'
-			.on 'update', listener
+			.onUpdate listener
 
 			tree 'B'
 			.dependsOn 'G'
-			.on 'update', listener
+			.onUpdate listener
 
 			tree 'G'
 			.dependsOn 'C'
-			.on 'update', listener
+			.onUpdate listener
 
 			tree 'C'
-			.on 'update', listener
+			.onUpdate listener
 
 			tree.update 'C', asyncCatch(done) () ->
 
@@ -225,7 +225,7 @@ describe 'Node', ->
 
 	describe '#on()', ->
 		it 'should add an event handler for the given event', ->
-			tree('A').on 'update', (name) ->
+			tree('A').onUpdate (name) ->
 
 			tree.updateListeners.should.have.key 'A'
 
@@ -235,11 +235,11 @@ describe 'Node', ->
 
 			tree 'A'
 			.dependsOn 'B'
-			.on 'update', ->
+			.onUpdate ->
 				updated.push 'A'
 
 			tree 'B'
-			.on 'update', ->
+			.onUpdate ->
 				updated.push 'B'
 
 			tree.update 'B', asyncCatch(done) () ->
@@ -252,12 +252,12 @@ describe 'Node', ->
 
 			tree 'A'
 			.dependsOn 'B'
-			.on 'update', (..., async) ->
+			.onUpdate (..., async) ->
 				asyncDone = async()
 				process.nextTick -> updated.push 'A'; asyncDone()
 
 			tree 'B'
-			.on 'update', (..., async) ->
+			.onUpdate (..., async) ->
 				asyncDone = async()
 				process.nextTick -> updated.push 'B'; asyncDone()
 

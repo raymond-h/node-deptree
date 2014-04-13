@@ -4,7 +4,7 @@ tree = deptree()
 
 tree 'A'
 .dependsOn 'B', 'C'
-.on 'update', ->
+.onUpdate ->
 	console.log "Changing A!"
 
 tree.update 'C'

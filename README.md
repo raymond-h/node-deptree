@@ -14,7 +14,7 @@ var tree = deptree();
 
 tree('A')
     .dependsOn('B', 'C')
-    .on('update', function() {
+    .onUpdate(function() {
     	console.log("Changing A!");
     });
 
