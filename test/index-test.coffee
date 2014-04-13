@@ -133,8 +133,67 @@ describe 'Dependency tree', ->
 			tree.buildUpdateTree 'G'
 			.should.deep.equal
 				'G': []
-				'B': ['G', 'Q']
-				'A': ['B', 'C']
+				'B': ['G']
+				'A': ['B']
+
+describe 'Updaters', ->
+	describe 'Linear', ->
+		it 'should trigger updates for nodes linearly - a
+		    node should always be updated before its dependents', ->
+
+			tree = deptree deptree.linearUpdater
+
+			updated = []
+
+			tree 'A'
+			.dependsOn 'B'
+			.on 'update', -> updated.push 'A'
+
+			tree 'B'
+			.dependsOn 'G'
+			.on 'update', -> updated.push 'B'
+
+			tree 'G'
+			.on 'update', -> updated.push 'G'
+
+			tree.update 'G'
+
+			updated.should.deep.equal ['G', 'B', 'A']
+
+	describe 'Parallel', ->
+		it 'should trigger updates for nodes as soon as all
+		    its dependencies are done', ->
+
+			tree = deptree deptree.parallelUpdater
+
+			updated = []
+
+			listener = (name) -> updated.push name
+
+			tree 'A'
+			.dependsOn 'B', 'C'
+			.on 'update', listener
+
+			tree 'B'
+			.dependsOn 'G'
+			.on 'update', listener
+
+			tree 'G'
+			.dependsOn 'C'
+			.on 'update', listener
+
+			tree 'C'
+			.on 'update', listener
+
+			tree.update 'C'
+
+			updated.should.deep.equal ['C', 'G', 'B', 'A']
+
+			updated = []
+
+			tree.update 'G'
+
+			updated.should.deep.equal ['G', 'B', 'A']
 
 describe 'Node', ->
 	describe '#dependsOn()', ->
