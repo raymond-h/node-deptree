@@ -1,8 +1,5 @@
 {EventEmitter} = require 'events'
 
-_ = require 'underscore'
-Q = require 'q'
-
 module.exports = exports = (updater = 'linear') ->
 	if typeof updater is 'string'
 		updater = exports.defaultUpdaters[updater] ? exports.linearUpdater
