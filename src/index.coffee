@@ -13,12 +13,18 @@ module.exports = exports = (updater = 'linear') ->
 	tree.events = new EventEmitter
 	tree.dependentTree = {}
 	tree.extras = {}
+	tree.updateListeners = {}
 	tree.updater = updater
 
 	tree.update = (name, callback) ->
 		triggerUpdate = (name, done) ->
 			tree.events.emit 'update', name, tree.extras[name]
-			done()
+
+			async = -> (async = null; done)
+
+			tree.updateListeners[name]? name, tree.extras[name], async
+
+			done() if async?
 
 		updater tree, name, triggerUpdate, -> callback?()
 
@@ -112,5 +118,4 @@ class exports.Node
 		this
 
 	on: (event, callback) ->
-		@tree.events.on event, (name, a...) =>
-			callback name, a... if name is @name
+		@tree.updateListeners[@name] = callback if event is 'update'

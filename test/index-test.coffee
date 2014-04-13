@@ -227,4 +227,41 @@ describe 'Node', ->
 		it 'should add an event handler for the given event', ->
 			tree('A').on 'update', (name) ->
 
-			tree.events.listeners('update').should.be.length 1
+			tree.updateListeners.should.have.key 'A'
+
+	describe 'update callback', ->
+		it 'should complete synchronously by default', (done) ->
+			updated = []
+
+			tree 'A'
+			.dependsOn 'B'
+			.on 'update', ->
+				updated.push 'A'
+
+			tree 'B'
+			.on 'update', ->
+				updated.push 'B'
+
+			tree.update 'B', asyncCatch(done) () ->
+				updated.should.deep.equal ['B', 'A']
+
+				done()
+
+		it 'should complete asynchronously if requested', (done) ->
+			updated = []
+
+			tree 'A'
+			.dependsOn 'B'
+			.on 'update', (..., async) ->
+				asyncDone = async()
+				setTimeout (-> updated.push 'A'; asyncDone()), 50
+
+			tree 'B'
+			.on 'update', (..., async) ->
+				asyncDone = async()
+				setTimeout (-> updated.push 'B'; asyncDone()), 50
+
+			tree.update 'B', asyncCatch(done) () ->
+				updated.should.deep.equal ['B', 'A']
+
+				done()
