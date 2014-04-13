@@ -82,8 +82,7 @@ exports.parallelUpdater = (tree, name, triggerUpdate, done) ->
 	next = (name, callback) ->
 		process.nextTick ->
 			triggerUpdate name, ->
-				updateDone name, ->
-					callback()
+				updateDone name, callback
 		
 	updateDone = (name, callback) ->
 		doNext = []
