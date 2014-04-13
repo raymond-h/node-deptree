@@ -8,7 +8,7 @@ Instead, you may clone this repo, or add it as a dependency in `package.json`!
 
 ## Example usage
 ```js
-var deptree = require('deptree');
+var deptree = require('deptree-updater');
 
 var tree = deptree();
 

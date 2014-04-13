@@ -1,4 +1,4 @@
-deptree = require 'deptree'
+deptree = require 'deptree-updater'
 
 tree = deptree()
 
