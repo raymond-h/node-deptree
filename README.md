@@ -1,4 +1,4 @@
-# node-deptree
+# node-deptree-updater
 A small node.js module for keeping dependencies and triggering updates in the right order!
 
 ## Installing
