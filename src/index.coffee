@@ -1,5 +1,7 @@
 {EventEmitter} = require 'events'
 
+_ = require 'underscore'
+
 module.exports = exports = (updater = 'linear') ->
 	if typeof updater is 'string'
 		updater = exports.defaultUpdaters[updater] ? exports.linearUpdater
@@ -13,12 +15,12 @@ module.exports = exports = (updater = 'linear') ->
 	tree.extras = {}
 	tree.updater = updater
 
-	tree.update = (name) ->
+	tree.update = (name, callback) ->
 		triggerUpdate = (name, done) ->
 			tree.events.emit 'update', name, tree.extras[name]
 			done()
 
-		updater tree, name, triggerUpdate, ->
+		updater tree, name, triggerUpdate, -> callback?()
 
 	tree.dependencies = (name) ->
 		key for key, value of tree.dependentTree when name in value
@@ -76,19 +78,29 @@ exports.defaultUpdaters.parallel =
 exports.parallelUpdater = (tree, name, triggerUpdate, done) ->
 	treeMap = tree.buildUpdateTree name
 
-	next = (name) ->
+	next = (name, callback) ->
 		triggerUpdate name, ->
-			updateDone name
+			updateDone name, ->
+				callback()
 		
-	updateDone = (name) ->
+	updateDone = (name, callback) ->
+		doNext = []
 		for node, deps of treeMap when name in deps
 			i = deps.indexOf name
 			deps[i..i] = []
 
-			if deps.length is 0
-				next node
+			doNext.push node if deps.length is 0
 
-	next name
+		return callback() if doNext.length is 0
+
+		allDone = _.after doNext.length, callback
+		for node in doNext
+			next node, allDone
+
+		null
+
+	next name, ->
+		done()
 
 class exports.Node
 	constructor: (@tree, @name) ->

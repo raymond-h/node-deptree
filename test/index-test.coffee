@@ -209,11 +209,11 @@ describe 'Updaters', ->
 
 				updated = []
 
-				tree.update 'G'
+				tree.update 'G', asyncCatch(done) () ->
 
-				updated.should.deep.equal ['G', 'B', 'A']
+					updated.should.deep.equal ['G', 'B', 'A']
 
-				done()
+					done()
 
 describe 'Node', ->
 	describe '#dependsOn()', ->
