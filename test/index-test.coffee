@@ -155,7 +155,7 @@ describe 'Dependency tree', ->
 describe 'Updaters', ->
 	describe 'Linear', ->
 		it 'should trigger updates for nodes linearly - a
-		    node should always be updated before its dependents', ->
+		    node should always be updated before its dependents', (done) ->
 
 			tree = deptree deptree.linearUpdater
 
@@ -172,13 +172,15 @@ describe 'Updaters', ->
 			tree 'G'
 			.on 'update', -> updated.push 'G'
 
-			tree.update 'G'
+			tree.update 'G', asyncCatch(done) () ->
 
-			updated.should.deep.equal ['G', 'B', 'A']
+				updated.should.deep.equal ['G', 'B', 'A']
+
+				done()
 
 	describe 'Parallel', ->
 		it 'should trigger updates for nodes as soon as all
-		    its dependencies are done', ->
+		    its dependencies are done', (done) ->
 
 			tree = deptree deptree.parallelUpdater
 
@@ -201,15 +203,17 @@ describe 'Updaters', ->
 			tree 'C'
 			.on 'update', listener
 
-			tree.update 'C'
+			tree.update 'C', asyncCatch(done) () ->
 
-			updated.should.deep.equal ['C', 'G', 'B', 'A']
+				updated.should.deep.equal ['C', 'G', 'B', 'A']
 
-			updated = []
+				updated = []
 
-			tree.update 'G'
+				tree.update 'G'
 
-			updated.should.deep.equal ['G', 'B', 'A']
+				updated.should.deep.equal ['G', 'B', 'A']
+
+				done()
 
 describe 'Node', ->
 	describe '#dependsOn()', ->
