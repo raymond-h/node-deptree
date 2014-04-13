@@ -3,7 +3,10 @@
 _ = require 'underscore'
 Q = require 'q'
 
-module.exports = exports = (updater = module.exports.linearUpdater) ->
+module.exports = exports = (updater = 'linear') ->
+	if typeof updater is 'string'
+		updater = exports.defaultUpdaters[updater] ? exports.linearUpdater
+
 	tree = (name, extra) ->
 		tree.extras[name] = extra
 		new exports.Node tree, name
@@ -11,6 +14,7 @@ module.exports = exports = (updater = module.exports.linearUpdater) ->
 	tree.events = new EventEmitter
 	tree.dependentTree = {}
 	tree.extras = {}
+	tree.updater = updater
 
 	tree.update = (name) ->
 		triggerUpdate = (name, done) ->
@@ -58,6 +62,9 @@ module.exports = exports = (updater = module.exports.linearUpdater) ->
 
 	tree
 
+exports.defaultUpdaters = {}
+
+exports.defaultUpdaters.linear =
 exports.linearUpdater = (tree, name, triggerUpdate, done) ->
 	queue = tree.buildUpdateQueue name
 
@@ -68,6 +75,7 @@ exports.linearUpdater = (tree, name, triggerUpdate, done) ->
 			if queue.length > 0 then update()
 			else done()
 
+exports.defaultUpdaters.parallel =
 exports.parallelUpdater = (tree, name, triggerUpdate, done) ->
 	treeMap = tree.buildUpdateTree name
 

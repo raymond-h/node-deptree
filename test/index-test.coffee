@@ -7,6 +7,22 @@ chai.should()
 deptree = require '../src/index'
 tree = null
 
+describe 'Tree constructor', ->
+	it 'should use the linear updater as its default updater', ->
+		tree = deptree()
+
+		tree.updater.should.equal deptree.linearUpdater
+
+	it 'should accept an updater function as its only parameter', ->
+		tree = deptree deptree.parallelUpdater
+
+		tree.updater.should.equal deptree.parallelUpdater
+
+	it 'should accept a string which maps to one of the default updaters', ->
+		tree = deptree 'parallel'
+
+		tree.updater.should.equal deptree.parallelUpdater
+
 beforeEach ->
 	tree = deptree()
 
