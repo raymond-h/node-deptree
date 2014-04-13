@@ -223,8 +223,8 @@ describe 'Node', ->
 
 			tree.dependentTree.should.deep.equal { 'B': ['A'], 'C': ['A'] }
 
-	describe '#on()', ->
-		it 'should add an event handler for the given event', ->
+	describe '#onUpdate()', ->
+		it 'should add an update listener', ->
 			tree('A').onUpdate (name) ->
 
 			tree.updateListeners.should.have.key 'A'
