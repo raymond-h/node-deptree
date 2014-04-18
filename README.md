@@ -2,9 +2,7 @@
 A small node.js module for keeping dependencies and triggering updates in the right order!
 
 ## Installing
-This module is not currently available on the npm registry, so you can't install that way just yet!
-
-Instead, you may clone this repo, or add it as a dependency in `package.json`!
+`npm install deptree-updater`
 
 ## Example usage
 ```js
