@@ -39,31 +39,41 @@ module.exports = exports = (updater = 'linear') ->
 	tree.dependents = (name) ->
 		tree.dependentTree[name] ? []
 
-	tree.buildUpdateQueue = (name) ->
-		queue = [name]
+	tree.buildUpdateQueue = (names) ->
+		queue = []
+		names = [].concat names
+		names.sort (a, b) ->
+			if tree.checkDependsOn a, b then 1
+			else if tree.checkDependsOn b, a then -1
+			else 0
 
 		addDeps = (name) ->
+			if name in queue
+				i = queue.indexOf name
+				queue[i..i] = []
+
+			queue.push name
 			dependents = tree.dependents name
-			for d in dependents when not (d in queue)
-				queue.push d
+			for d in dependents
 				addDeps d
 
-		addDeps name
+		addDeps name for name in names
 
 		queue
 
-	tree.buildUpdateTree = (name) ->
+	tree.buildUpdateTree = (names) ->
 		treeMap = {}
+		names = [].concat names
 
 		next = (name) ->
 			deps = tree.dependents name
 			treeMap[name] = deps
 			next d for d in deps
 
-		next name
+		next name for name in names
 
 		inverted = {}
-		inverted[name] = []
+		inverted[name] = [] for name in names
 		for name, deps of treeMap
 			for dep in deps
 				(inverted[dep] ?= []).push name
@@ -71,7 +81,15 @@ module.exports = exports = (updater = 'linear') ->
 		inverted
 
 	tree.checkDependsOn = (mainName, depName) ->
-		mainName in tree.dependents depName
+		deps = tree.dependents depName
+		while deps.length > 0
+			return true if mainName in deps
+
+			newDeps = []
+			newDeps.push (tree.dependents depName)... for depName in deps
+			deps = newDeps
+
+		return false
 
 	tree
 
@@ -91,7 +109,8 @@ exports.linearUpdater = (tree, name, triggerUpdate, done) ->
 
 exports.defaultUpdaters.parallel =
 exports.parallelUpdater = (tree, name, triggerUpdate, done) ->
-	treeMap = tree.buildUpdateTree name
+	names = [].concat name
+	treeMap = tree.buildUpdateTree names
 
 	next = (nextName, callback) ->
 		process.nextTick ->
@@ -114,8 +133,9 @@ exports.parallelUpdater = (tree, name, triggerUpdate, done) ->
 
 		null
 
-	next name, ->
-		done()
+	allDone = _.after names.length, -> done()
+
+	next name, allDone for name in names
 
 class exports.Node
 	constructor: (@tree, @name) ->
