@@ -21,12 +21,14 @@ module.exports = exports = (updater = 'linear') ->
 		_.defaults options,
 			triggerTarget: true
 
+		target = [].concat target
+
 		triggerUpdate = (name, done) ->
 			tree.events.emit 'update', name, tree.extras[name]
 
 			async = -> (async = null; done)
 
-			if options.triggerTarget or name isnt target
+			if options.triggerTarget or not (name in target)
 				tree.updateListeners[name]? name, tree.extras[name], async
 
 			done() if async?
@@ -96,8 +98,8 @@ module.exports = exports = (updater = 'linear') ->
 exports.defaultUpdaters = {}
 
 exports.defaultUpdaters.linear =
-exports.linearUpdater = (tree, name, triggerUpdate, done) ->
-	queue = tree.buildUpdateQueue name
+exports.linearUpdater = (tree, names, triggerUpdate, done) ->
+	queue = tree.buildUpdateQueue names
 
 	do update = ->
 		process.nextTick ->
@@ -108,8 +110,7 @@ exports.linearUpdater = (tree, name, triggerUpdate, done) ->
 				else done()
 
 exports.defaultUpdaters.parallel =
-exports.parallelUpdater = (tree, name, triggerUpdate, done) ->
-	names = [].concat name
+exports.parallelUpdater = (tree, names, triggerUpdate, done) ->
 	treeMap = tree.buildUpdateTree names
 
 	next = (nextName, callback) ->
