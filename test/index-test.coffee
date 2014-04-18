@@ -77,6 +77,22 @@ describe 'Dependency tree', ->
 
 			tree.update 'B'
 
+		it 'should not trigger the update callback for a given node when
+		    triggerTarget is false', (done) ->
+			updated = []
+
+			tree 'A'
+			.dependsOn 'B'
+			.onUpdate -> updated.push 'A'
+
+			tree 'B'
+			.onUpdate -> updated.push 'B'
+
+			tree.update 'B', triggerTarget: false, asyncCatch(done) () ->
+				updated.should.deep.equal ['A']
+
+				done()
+
 	describe '#dependencies()', ->
 		it 'should return the dependencies of the given node', ->
 			tree 'A'
