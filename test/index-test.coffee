@@ -119,6 +119,20 @@ describe 'Dependency tree', ->
 
 				done()
 
+		it 'should return an array of updated nodes in the order they were
+		    were finished', (done) ->
+
+			tree 'A'
+			.dependsOn 'B'
+
+			tree 'B'
+			.dependsOn 'C'
+
+			tree.update 'C', asyncCatch(done) (names) ->
+				names.should.deep.equal ['C', 'B', 'A']
+
+				done()
+
 	describe '#dependencies()', ->
 		it 'should return the dependencies of the given node', ->
 			tree 'A'

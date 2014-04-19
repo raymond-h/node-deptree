@@ -22,9 +22,12 @@ module.exports = exports = (updater = 'linear') ->
 			triggerTarget: true
 
 		target = [].concat target
+		updated = []
 
-		triggerUpdate = (name, done) ->
+		triggerUpdate = (name, callback) ->
 			tree.events.emit 'update', name, tree.extras[name]
+
+			done = -> updated.push name; callback()
 
 			async = -> (async = null; done)
 
@@ -33,7 +36,7 @@ module.exports = exports = (updater = 'linear') ->
 
 			done() if async?
 
-		updater tree, target, triggerUpdate, -> callback?()
+		updater tree, target, triggerUpdate, -> callback? updated
 
 	tree.dependencies = (name) ->
 		key for key, value of tree.dependentTree when name in value
